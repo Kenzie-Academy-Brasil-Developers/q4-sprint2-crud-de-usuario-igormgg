@@ -1,19 +1,42 @@
+import bcrypt from 'bcryptjs';
 import { Request, Response } from "express";
-import { UserRepository } from "../../repositories";
+import { IUser, UserRepository } from "../../repositories";
 
 const updateUserController = async (req: Request, res: Response) => {
+    const { userAuthenticated } = req
+
+    const { isAdm } = req.userAuthenticated
+
     const { uuid } = req.params
+
     const data = req.body
 
     delete data.isAdm
 
+    if (data.password) {
+        data.password = await bcrypt.hash(data.password, 10)
+    }
+
     data.updatedOn = new Date()
 
-    await new UserRepository().patchUser(uuid, data)
-    
-    const user = await new UserRepository().findOneUser(uuid)
+    const users: IUser[] = await new UserRepository().findUsers()
 
-    return res.status(200).json(user)
+    const findUser = users.find((usr) => uuid === usr.uuid)
+
+    if (!findUser) {
+        return res.status(400).json({ message: "User not found" })
+    }
+
+    if (isAdm || uuid === userAuthenticated.uuid) {
+        await new UserRepository().patchUser(uuid, data)
+        
+        const user: IUser = await new UserRepository().findOneUser(uuid)
+    
+        return res.status(200).json(user)
+    } else {
+        return res.status(401).json({'message': "Missing admin permissions"})
+    }
+
 }
 
 export default updateUserController

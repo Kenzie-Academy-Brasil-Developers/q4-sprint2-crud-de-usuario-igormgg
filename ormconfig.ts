@@ -1,10 +1,12 @@
+import { ormDatabase, ormPassword, ormUsername } from "./src/configs";
+
 export default {
    "type": "postgres",
    "host": "localhost",
    "port": 5432,
-   "username": "postgres",
-   "password": "password",
-   "database": "postgres",
+   "username": ormUsername,
+   "password": ormPassword,
+   "database": ormDatabase,
    "synchronize": true,
    "logging": false,
    "entities": [

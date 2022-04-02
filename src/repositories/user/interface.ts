@@ -4,8 +4,8 @@ interface IUser {
     email: string;
     password?: string;
     isAdm: boolean;
-    createdOn: any;
-    updatedOn: any;
+    createdOn?: any;
+    updatedOn?: any;
 }
 
   interface IUserRepo {
