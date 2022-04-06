@@ -31,8 +31,14 @@ const updateUserController = async (req: Request, res: Response) => {
         await new UserRepository().patchUser(uuid, data)
         
         const user: IUser = await new UserRepository().findOneUser(uuid)
+
+        const userWithoutPass: IUser = JSON.parse(
+            JSON.stringify(user)
+        );
     
-        return res.status(200).json(user)
+        delete userWithoutPass.password
+    
+        return res.status(200).json(userWithoutPass)
     } else {
         return res.status(401).json({'message': "Missing admin permissions"})
     }
